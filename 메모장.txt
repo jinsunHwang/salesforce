@@ -1,1 +1,2 @@
 
+FIELD_CUSTOM_VALIDATION_EXCEPTION, ServiceTerritoryMember 정보가 없는 사용자는 접수정보를 생성할 수 없습니다.: []

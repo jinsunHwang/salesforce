@@ -1,0 +1,20 @@
+select ApexClass.Name, format(CreatedDate), CreatedById, JobType, ApexClassId, Status, JobItemsProcessed, TotalJobItems, NumberOfErrors, format(CompletedDate), MethodName, ExtendedStatus, ParentJobId, LastProcessed, LastProcessedOffset, CronTriggerId
+from AsyncApexJob
+where  ApexClass.Name like '%0690%'
+and CreatedDate =TODAY
+order by CreatedDate desc
+
+
+
+배치 실행
+String cronExp = '0 0 1 * * ?'; 
+String jobName = 'FS_CollectMngtBatch Job';
+
+FS_CollectMngtBatch_sc sc = new FS_CollectMngtBatch_sc();
+System.schedule(jobName, cronExp, sc);
+
+
+////
+//SELECT Id, CronJobDetailId, NextFireTime, PreviousFireTime, State, StartTime, EndTime, CronExpression, TimeZoneSidKey, OwnerId, LastModifiedById, CreatedById, CreatedDate, TimesTriggered FROM CronTrigger WHERE CronJobDetail.Name = 'FS_CollectMngtBatch Job'
+//
+//System.abortJob('08e6D00000J8munQAB');

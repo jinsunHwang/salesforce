@@ -18,3 +18,8 @@ System.schedule(jobName, cronExp, sc);
 //SELECT Id, CronJobDetailId, NextFireTime, PreviousFireTime, State, StartTime, EndTime, CronExpression, TimeZoneSidKey, OwnerId, LastModifiedById, CreatedById, CreatedDate, TimesTriggered FROM CronTrigger WHERE CronJobDetail.Name = 'FS_CollectMngtBatch Job'
 //
 //System.abortJob('08e6D00000J8munQAB');
+
+
+
+
+'"C:\Users\A81820\AppData\Local\sfdx\client\bin\..\7.209.6-8ba3197\bin\sfdx.cmd"'은(는) 내부 또는 외부 명령, 실행할 수 있는 프로그램, 또는 배치 파일이 아닙니다.

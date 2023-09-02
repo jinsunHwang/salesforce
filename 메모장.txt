@@ -4,3 +4,6 @@ FIELD_CUSTOM_VALIDATION_EXCEPTION, ServiceTerritoryMember 정보가 없는 사�
 
 
 common.exception.SfdcSqlException "System.UnexpectedException: common.exception.SfdcSqlException: ERROR: portal "C_xxxx" does not exist"
+
+
+System.UnexpectedException: No more than one executeBatch can be called from within a test method.  Please make sure the iterable returned from your start method matches the batch size, resulting in one executeBatch invocation.

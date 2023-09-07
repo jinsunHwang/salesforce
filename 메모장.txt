@@ -1,9 +1,59 @@
+@AuraEnabled
+    public static Map<String,Object> searchResrvData(Map<String,Object> mapSearchParam,String condition){
+        Map<String,Object> mapReturn = new Map<String,Object>();
 
-FIELD_CUSTOM_VALIDATION_EXCEPTION, ServiceTerritoryMember 정보가 없는 사용자는 접수정보를 생성할 수 없습니다.: []
+        // 예약 요청 productRequestLineItem
+        String productRequestLineItemQuery = FS_ResrvMngtQuery.queryProductRequestLineItems(mapSearchParam,condition);
+        List<ProductRequestLineItem> productRequestLineItems =Database.query(productRequestLineItemQuery);
+        System.debug('dateTime ::' +Datetime.now().getTime());
 
+        // 화면의 적치장소 정보
+        Set<String> productIds = FS_ComUtils.setToKeys(productRequestLineItems,'Product2Id');
+        String productLocationQuery = FS_ResrvMngtQuery.queryProduct2LocationIds(productIds,mapSearchParam);
+        Map<String,SObject> productLocation = FS_ComUtils.getSObjQueryMapJoin(productLocationQuery,'fm_DIV_CODE__c','','Product2.fm_PartNo__c');
+        System.debug('dateTime ::' +Datetime.now().getTime());
 
+        // 예약한 대상의 출고 정보 productTransfer
+        String releaseProductTransferQuery = FS_ResrvMngtQuery.queryProductTransfersJoin(' AND DestinationLocation.RecordType.DeveloperName = \'CENTER\' AND isReceived=true ',mapSearchParam,condition);
+        Map<String,List<SObject>> releaseProductTransfers = FS_ComUtils.getStringListSObjectQuery(releaseProductTransferQuery,'ProductRequestLineItemId');
+        System.debug('dateTime ::' +Datetime.now().getTime());
 
-common.exception.SfdcSqlException "System.UnexpectedException: common.exception.SfdcSqlException: ERROR: portal "C_xxxx" does not exist"
+        // 예약한 대상의 입고 정보 productTransfer
+        String receivedProductTransferQuery = FS_ResrvMngtQuery.queryProductTransfersJoin(' AND RecordType.DeveloperName != \'RENT_Adjust\'' +' AND DestinationLocation.RecordType.DeveloperName = \'Location\''+' AND SourceLocation.RecordType.DeveloperName = \'Center\' AND isReceived=true AND QuantityReceived > 0 ',mapSearchParam,condition);
+        Map<String,List<SObject>> receivedProductTransfers = FS_ComUtils.getStringListSObjectQuery(receivedProductTransferQuery,'ProductRequestLineItemId');
+        System.debug('dateTime ::' +Datetime.now().getTime());
 
+        // 예약한 대상의 SM출고 정보 productTransfer
+        String directProductTransferQuery = FS_ResrvMngtQuery.queryProductTransfersJoin('AND RecordType.DeveloperName = \'RENT\' AND DestinationLocation.RecordType.DeveloperName = \'SE\' AND isReceived=true ',mapSearchParam,condition);
+        Map<String,SObject> directProductTransfers = FS_ComUtils.getSObjQueryMap(directProductTransferQuery,'ProductRequestLineItemId');
+        System.debug('dateTime ::' +Datetime.now().getTime());
+        // 예약 대상의 반품 정보 returnOrderLineItem
+        String returnOrderLineItemQuery = FS_ResrvMngtQuery.queryPrliReturnOrderLineItemsJoin(mapSearchParam,condition);
+        Map<String,List<SObject>> returnOrderLineItems = FS_ComUtils.getStringListSObjectQuery(returnOrderLineItemQuery,'ProductRequestLineItemId');
+        System.debug('dateTime ::' +Datetime.now().getTime());
 
-System.UnexpectedException: No more than one executeBatch can be called from within a test method.  Please make sure the iterable returned from your start method matches the batch size, resulting in one executeBatch invocation.
+        // 예약 대상의 공급예정 정보
+        Set<String> orderInfo = FS_ComUtils.setToKeys(productRequestLineItems,'Order_Number__c','^','Order_SEQ__c');
+        String slOrderProgressQuery = FS_ResrvMngtQuery.querySlOrderProgressesOrders(orderInfo);
+        Map<String,List<SObject>> slOrderProgresses  = FS_ComUtils.getStringListSObjectQuery(slOrderProgressQuery,'Order_Number__c','^','Order_SEQ__c');
+        System.debug('dateTime ::' +Datetime.now().getTime());
+
+        // 화면에 필요한 pickList 정보
+        Map<String,Map<String,String>> pickListMap =getProcessMap();
+        System.debug('dateTime ::' +Datetime.now().getTime());
+
+        // 조직 정보
+        Map<String,String> getDeptName = getDeptName();
+        System.debug('dateTime ::' +Datetime.now().getTime());
+
+        mapReturn.put('productRequestLineItems',productRequestLineItems);
+        mapReturn.put('productLocation',productLocation);
+        mapReturn.put('releaseProductTransfers',releaseProductTransfers);
+        mapReturn.put('receivedProductTransfers',receivedProductTransfers);
+        mapReturn.put('directProductTransfers',directProductTransfers);
+        mapReturn.put('slOrderProgresses',slOrderProgresses);
+        mapReturn.put('returnOrderLineItems',returnOrderLineItems);
+        mapReturn.put('pickListMap',pickListMap);
+        mapReturn.put('getDeptName',getDeptName);
+        return mapReturn;
+    }

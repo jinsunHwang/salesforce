@@ -1,59 +1,7 @@
-@AuraEnabled
-    public static Map<String,Object> searchResrvData(Map<String,Object> mapSearchParam,String condition){
-        Map<String,Object> mapReturn = new Map<String,Object>();
-
-        // 예약 요청 productRequestLineItem
-        String productRequestLineItemQuery = FS_ResrvMngtQuery.queryProductRequestLineItems(mapSearchParam,condition);
-        List<ProductRequestLineItem> productRequestLineItems =Database.query(productRequestLineItemQuery);
-        System.debug('dateTime ::' +Datetime.now().getTime());
-
-        // 화면의 적치장소 정보
-        Set<String> productIds = FS_ComUtils.setToKeys(productRequestLineItems,'Product2Id');
-        String productLocationQuery = FS_ResrvMngtQuery.queryProduct2LocationIds(productIds,mapSearchParam);
-        Map<String,SObject> productLocation = FS_ComUtils.getSObjQueryMapJoin(productLocationQuery,'fm_DIV_CODE__c','','Product2.fm_PartNo__c');
-        System.debug('dateTime ::' +Datetime.now().getTime());
-
-        // 예약한 대상의 출고 정보 productTransfer
-        String releaseProductTransferQuery = FS_ResrvMngtQuery.queryProductTransfersJoin(' AND DestinationLocation.RecordType.DeveloperName = \'CENTER\' AND isReceived=true ',mapSearchParam,condition);
-        Map<String,List<SObject>> releaseProductTransfers = FS_ComUtils.getStringListSObjectQuery(releaseProductTransferQuery,'ProductRequestLineItemId');
-        System.debug('dateTime ::' +Datetime.now().getTime());
-
-        // 예약한 대상의 입고 정보 productTransfer
-        String receivedProductTransferQuery = FS_ResrvMngtQuery.queryProductTransfersJoin(' AND RecordType.DeveloperName != \'RENT_Adjust\'' +' AND DestinationLocation.RecordType.DeveloperName = \'Location\''+' AND SourceLocation.RecordType.DeveloperName = \'Center\' AND isReceived=true AND QuantityReceived > 0 ',mapSearchParam,condition);
-        Map<String,List<SObject>> receivedProductTransfers = FS_ComUtils.getStringListSObjectQuery(receivedProductTransferQuery,'ProductRequestLineItemId');
-        System.debug('dateTime ::' +Datetime.now().getTime());
-
-        // 예약한 대상의 SM출고 정보 productTransfer
-        String directProductTransferQuery = FS_ResrvMngtQuery.queryProductTransfersJoin('AND RecordType.DeveloperName = \'RENT\' AND DestinationLocation.RecordType.DeveloperName = \'SE\' AND isReceived=true ',mapSearchParam,condition);
-        Map<String,SObject> directProductTransfers = FS_ComUtils.getSObjQueryMap(directProductTransferQuery,'ProductRequestLineItemId');
-        System.debug('dateTime ::' +Datetime.now().getTime());
-        // 예약 대상의 반품 정보 returnOrderLineItem
-        String returnOrderLineItemQuery = FS_ResrvMngtQuery.queryPrliReturnOrderLineItemsJoin(mapSearchParam,condition);
-        Map<String,List<SObject>> returnOrderLineItems = FS_ComUtils.getStringListSObjectQuery(returnOrderLineItemQuery,'ProductRequestLineItemId');
-        System.debug('dateTime ::' +Datetime.now().getTime());
-
-        // 예약 대상의 공급예정 정보
-        Set<String> orderInfo = FS_ComUtils.setToKeys(productRequestLineItems,'Order_Number__c','^','Order_SEQ__c');
-        String slOrderProgressQuery = FS_ResrvMngtQuery.querySlOrderProgressesOrders(orderInfo);
-        Map<String,List<SObject>> slOrderProgresses  = FS_ComUtils.getStringListSObjectQuery(slOrderProgressQuery,'Order_Number__c','^','Order_SEQ__c');
-        System.debug('dateTime ::' +Datetime.now().getTime());
-
-        // 화면에 필요한 pickList 정보
-        Map<String,Map<String,String>> pickListMap =getProcessMap();
-        System.debug('dateTime ::' +Datetime.now().getTime());
-
-        // 조직 정보
-        Map<String,String> getDeptName = getDeptName();
-        System.debug('dateTime ::' +Datetime.now().getTime());
-
-        mapReturn.put('productRequestLineItems',productRequestLineItems);
-        mapReturn.put('productLocation',productLocation);
-        mapReturn.put('releaseProductTransfers',releaseProductTransfers);
-        mapReturn.put('receivedProductTransfers',receivedProductTransfers);
-        mapReturn.put('directProductTransfers',directProductTransfers);
-        mapReturn.put('slOrderProgresses',slOrderProgresses);
-        mapReturn.put('returnOrderLineItems',returnOrderLineItems);
-        mapReturn.put('pickListMap',pickListMap);
-        mapReturn.put('getDeptName',getDeptName);
-        return mapReturn;
-    }
+13:38:08.55 (37603904797)|CODE_UNIT_FINISHED|ProductRequestLineItem on ProductRequestLineItem trigger event BeforeUpdate|__sfdc_trigger/ProductRequestLineItem
+13:38:08.55 (37613803441)|DML_END|[232]
+13:38:08.55 (37613993149)|VF_PAGE_MESSAGE|bad value for restricted picklist field: PO Canceled
+13:38:08.55 (37614138884)|EXCEPTION_THROWN|[232]|System.DmlException: Upsert failed. First exception on row 0 with id 0Tw5j0000029X5iCAE; first error: INVALID_OR_NULL_FOR_RESTRICTED_PICKLIST, bad value for restricted picklist field: PO Canceled: [Adjust_Type__c]
+13:38:08.55 (37616374784)|USER_DEBUG|[284]|DEBUG|232Line &#124;&#124; Upsert failed. First exception on row 0 with id 0Tw5j0000029X5iCAE; first error: INVALID_OR_NULL_FOR_RESTRICTED_PICKLIST, bad value for restricted picklist field: PO Canceled: [Adjust_Type__c]
+13:38:08.55 (37616497625)|SYSTEM_MODE_EXIT|false
+13:38:08.55 (37616576640)|FATAL_ERROR|System.AuraHandledException: Script-thrown exception

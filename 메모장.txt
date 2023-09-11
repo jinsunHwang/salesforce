@@ -1,1 +1,32 @@
 Insert failed. First exception on row 0; first error: UNABLE_TO_LOCK_ROW, unable to obtain exclusive access to this record or 3 records: 01t6D00000IJChlQAH,01t6D00000IJChmQAH,01t6D00000IJDq4QAH: []
+
+
+
+
+
+17:57:24.377 (9377495511)|CUMULATIVE_LIMIT_USAGE_END
+17:57:24.240 (9377824012)|CODE_UNIT_FINISHED|ProductRequestLineItem on ProductRequestLineItem trigger event BeforeInsert|__sfdc_trigger/ProductRequestLineItem
+17:57:28.441 (13441389380)|DML_END|[2238]
+17:57:28.441 (13441604852)|EXCEPTION_THROWN|[2238]|System.DmlException: Insert failed. First exception on row 0; first error: UNABLE_TO_LOCK_ROW, unable to obtain exclusive access to this record or 3 records: 01t6D00000IJChlQAH,01t6D00000IJChmQAH,01t6D00000IJDq4QAH: []
+17:57:28.441 (13443235023)|HEAP_ALLOCATE|[2238]|Bytes:201
+17:57:28.441 (13443408110)|FATAL_ERROR|System.DmlException: Insert failed. First exception on row 0; first error: UNABLE_TO_LOCK_ROW, unable to obtain exclusive access to this record or 3 records: 01t6D00000IJChlQAH,01t6D00000IJChmQAH,01t6D00000IJDq4QAH: []
+
+Class.FS_RequestPartsController.doSaveRent: line 2238, column 1
+17:57:28.441 (13443436490)|FATAL_ERROR|System.DmlException: Insert failed. First exception on row 0; first error: UNABLE_TO_LOCK_ROW, unable to obtain exclusive access to this record or 3 records: 01t6D00000IJChlQAH,01t6D00000IJChmQAH,01t6D00000IJDq4QAH: []
+
+Class.FS_RequestPartsController.doSaveRent: line 2238, column 1
+17:57:28.443 (13443457602)|CUMULATIVE_LIMIT_USAGE
+17:57:28.443 (13443457602)|LIMIT_USAGE_FOR_NS|(default)
+  Number of SOQL queries: 9 out of 100
+  Number of query rows: 105 out of 50000
+  Number of SOSL queries: 0 out of 20
+  Number of DML statements: 2 out of 150
+  Number of Publish Immediate DML: 0 out of 150
+  Number of DML rows: 4 out of 10000
+  Maximum CPU time: 172 out of 10000
+  Maximum heap size: 0 out of 6000000
+  Number of callouts: 0 out of 100
+  Number of Email Invocations: 0 out of 10
+  Number of future calls: 0 out of 50
+  Number of queueable jobs added to the queue: 0 out of 50
+  Number of Mobile Apex push calls: 0 out of 10

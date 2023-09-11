@@ -1,7 +1,1 @@
-13:38:08.55 (37603904797)|CODE_UNIT_FINISHED|ProductRequestLineItem on ProductRequestLineItem trigger event BeforeUpdate|__sfdc_trigger/ProductRequestLineItem
-13:38:08.55 (37613803441)|DML_END|[232]
-13:38:08.55 (37613993149)|VF_PAGE_MESSAGE|bad value for restricted picklist field: PO Canceled
-13:38:08.55 (37614138884)|EXCEPTION_THROWN|[232]|System.DmlException: Upsert failed. First exception on row 0 with id 0Tw5j0000029X5iCAE; first error: INVALID_OR_NULL_FOR_RESTRICTED_PICKLIST, bad value for restricted picklist field: PO Canceled: [Adjust_Type__c]
-13:38:08.55 (37616374784)|USER_DEBUG|[284]|DEBUG|232Line &#124;&#124; Upsert failed. First exception on row 0 with id 0Tw5j0000029X5iCAE; first error: INVALID_OR_NULL_FOR_RESTRICTED_PICKLIST, bad value for restricted picklist field: PO Canceled: [Adjust_Type__c]
-13:38:08.55 (37616497625)|SYSTEM_MODE_EXIT|false
-13:38:08.55 (37616576640)|FATAL_ERROR|System.AuraHandledException: Script-thrown exception
+Insert failed. First exception on row 0; first error: UNABLE_TO_LOCK_ROW, unable to obtain exclusive access to this record or 3 records: 01t6D00000IJChlQAH,01t6D00000IJChmQAH,01t6D00000IJDq4QAH: []

@@ -1,32 +1,64 @@
-Insert failed. First exception on row 0; first error: UNABLE_TO_LOCK_ROW, unable to obtain exclusive access to this record or 3 records: 01t6D00000IJChlQAH,01t6D00000IJChmQAH,01t6D00000IJDq4QAH: []
+@AuraEnabled // Send Message
+    public static void sendMessage(Object listTask, String prId, String message,String subject,String phoneNumber){
+        try{
+            phoneNumber='01049063991';//배포시 주석
+            if(subject =='SMS') {
+                List<MsgWhitelist__mdt> whitelists = Database.query('SELECT Id,Value__c FROM MsgWhitelist__mdt WHERE Value__c =:phoneNumber ');
+                if(whitelists.size() >0) {
+                    FS_MessageCall.sendMessage(phoneNumber,message);
+                }
+            }
+            ProductRequestLineItem productRequestLineItem = Database.query('SELECT ParentId FROM ProductRequestLineItem WHERE Id=:prId');
+            FS_MessageCall.saveMessageLog(productRequestLineItem.ParentId, message,subject);
+        }catch(Exception e) {
+            System.debug(e.getLineNumber() + 'Line || ' + e.getMessage());
+            throw new AuraHandledException(e.getLineNumber() + 'Line || ' + e.getMessage());
+        }
+    }
 
 
 
 
 
-17:57:24.377 (9377495511)|CUMULATIVE_LIMIT_USAGE_END
-17:57:24.240 (9377824012)|CODE_UNIT_FINISHED|ProductRequestLineItem on ProductRequestLineItem trigger event BeforeInsert|__sfdc_trigger/ProductRequestLineItem
-17:57:28.441 (13441389380)|DML_END|[2238]
-17:57:28.441 (13441604852)|EXCEPTION_THROWN|[2238]|System.DmlException: Insert failed. First exception on row 0; first error: UNABLE_TO_LOCK_ROW, unable to obtain exclusive access to this record or 3 records: 01t6D00000IJChlQAH,01t6D00000IJChmQAH,01t6D00000IJDq4QAH: []
-17:57:28.441 (13443235023)|HEAP_ALLOCATE|[2238]|Bytes:201
-17:57:28.441 (13443408110)|FATAL_ERROR|System.DmlException: Insert failed. First exception on row 0; first error: UNABLE_TO_LOCK_ROW, unable to obtain exclusive access to this record or 3 records: 01t6D00000IJChlQAH,01t6D00000IJChmQAH,01t6D00000IJDq4QAH: []
 
-Class.FS_RequestPartsController.doSaveRent: line 2238, column 1
-17:57:28.441 (13443436490)|FATAL_ERROR|System.DmlException: Insert failed. First exception on row 0; first error: UNABLE_TO_LOCK_ROW, unable to obtain exclusive access to this record or 3 records: 01t6D00000IJChlQAH,01t6D00000IJChmQAH,01t6D00000IJDq4QAH: []
 
-Class.FS_RequestPartsController.doSaveRent: line 2238, column 1
-17:57:28.443 (13443457602)|CUMULATIVE_LIMIT_USAGE
-17:57:28.443 (13443457602)|LIMIT_USAGE_FOR_NS|(default)
-  Number of SOQL queries: 9 out of 100
-  Number of query rows: 105 out of 50000
-  Number of SOSL queries: 0 out of 20
-  Number of DML statements: 2 out of 150
-  Number of Publish Immediate DML: 0 out of 150
-  Number of DML rows: 4 out of 10000
-  Maximum CPU time: 172 out of 10000
-  Maximum heap size: 0 out of 6000000
-  Number of callouts: 0 out of 100
-  Number of Email Invocations: 0 out of 10
-  Number of future calls: 0 out of 50
-  Number of queueable jobs added to the queue: 0 out of 50
-  Number of Mobile Apex push calls: 0 out of 10
+
+@Future(Callout=true)
+    public static void sendMessage(String phoneNo,String message) {
+        try{
+            String completedMsg = '안녕하세요 고객님. '+message;
+            Http http = new Http();
+            HttpRequest request = new HttpRequest();
+            request.setEndpoint( 'https://eapi.singlex.com/scs/msg/api/v1/message' );       // 운영
+            // request.setEndpoint( 'https://eapi-dev.singlex.com/scs/msg/api/v1/message' );   // 개발 (최대 하루 10건)
+            request.setHeader('x-apikey', 'B2uxz2Isi4drpvJUixXDLaHAfCDx2dJQ');
+            request.setHeader('Content-Type','application/json');
+            request.setHeader('charset','UTF-8');
+            request.setHeader('Accept', 'application/json');
+            request.setMethod('POST');
+
+            Map<String, String> data = new Map<String, String>();
+            data.put('appId', 'svc');               // 판매 서비스 아이디
+            data.put('tntId', 'L1100');             // 테넌트 아이디
+            data.put('callbackNo', '0237771114');   // 수신번호
+            data.put('jobType', 'R00');             // 발송유형 (단건: R00, 대량: B00)
+            data.put('receiveMobileNo', phoneNo);   // 발신번호
+            data.put('backupMessage', completedMsg);// 문자 메시지
+
+            request.setBody(JSON.serialize(data));
+
+            HttpResponse response=http.send(request);
+            Integer status = response.getStatusCode();
+            System.debug('status ::'+status);
+
+            Map<String,Object> responseBody = new Map<String,Object>();
+            responseBody = (Map<String,Object>) JSON.deserializeUntyped(response.getBody());
+            if(status ==200) {
+                System.debug('Success ::'+responseBody);
+            } else {
+                System.debug('Error ::'+responseBody);
+            }
+        } catch (Exception e) {
+            System.debug('sendKakao Error Message ::: ' + e.getMessage());
+        }
+    }

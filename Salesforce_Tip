@@ -1,0 +1,6 @@
+메모리 체크
+트랜잭션당 최대 힙사이즈
+System.debug('Max Heap Size Allowed :: ' + Limits.getLimitHeapSize());
+현재 힙사이즈
+System.debug('Current Heap Size :: ' + Limits.getHeapSize());
+

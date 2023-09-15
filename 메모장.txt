@@ -1,12 +1,13 @@
 @AuraEnabled // Send Message
     public static void sendMessage(Object listTask, String prId, String message,String subject,String phoneNumber){
+        phoneNumber='01049063991';//배포시 주석
+        List<MsgWhitelist__mdt> whitelists = Database.query('SELECT Id,Value__c FROM MsgWhitelist__mdt WHERE Value__c =:phoneNumber ');
+        if(whitelists.isEmpty() && subject =='SMS') {
+            throw new AuraHandledException('고객의 번호를 화이트 리스트에 추가해 주세요.');
+        }
         try{
-            phoneNumber='01049063991';//배포시 주석
-            if(subject =='SMS') {
-                List<MsgWhitelist__mdt> whitelists = Database.query('SELECT Id,Value__c FROM MsgWhitelist__mdt WHERE Value__c =:phoneNumber ');
-                if(whitelists.size() >0) {
-                    FS_MessageCall.sendMessage(phoneNumber,message);
-                }
+            if(whitelists.size()>0 && subject =='SMS') {
+                FS_MessageCall.sendMessage(phoneNumber,'안녕하세요 고객님. '+message);
             }
             ProductRequestLineItem productRequestLineItem = Database.query('SELECT ParentId FROM ProductRequestLineItem WHERE Id=:prId');
             FS_MessageCall.saveMessageLog(productRequestLineItem.ParentId, message,subject);
@@ -15,67 +16,3 @@
             throw new AuraHandledException(e.getLineNumber() + 'Line || ' + e.getMessage());
         }
     }
-
-
-
-
-
-
-
-
-@Future(Callout=true)
-    public static void sendMessage(String phoneNo,String message) {
-        try{
-            String completedMsg = '안녕하세요 고객님. '+message;
-            Http http = new Http();
-            HttpRequest request = new HttpRequest();
-            request.setEndpoint( 'https://eapi.singlex.com/scs/msg/api/v1/message' );       // 운영
-            // request.setEndpoint( 'https://eapi-dev.singlex.com/scs/msg/api/v1/message' );   // 개발 (최대 하루 10건)
-            request.setHeader('x-apikey', 'B2uxz2Isi4drpvJUixXDLaHAfCDx2dJQ');
-            request.setHeader('Content-Type','application/json');
-            request.setHeader('charset','UTF-8');
-            request.setHeader('Accept', 'application/json');
-            request.setMethod('POST');
-
-            Map<String, String> data = new Map<String, String>();
-            data.put('appId', 'svc');               // 판매 서비스 아이디
-            data.put('tntId', 'L1100');             // 테넌트 아이디
-            data.put('callbackNo', '0237771114');   // 수신번호
-            data.put('jobType', 'R00');             // 발송유형 (단건: R00, 대량: B00)
-            data.put('receiveMobileNo', phoneNo);   // 발신번호
-            data.put('backupMessage', completedMsg);// 문자 메시지
-
-            request.setBody(JSON.serialize(data));
-
-            HttpResponse response=http.send(request);
-            Integer status = response.getStatusCode();
-            System.debug('status ::'+status);
-
-            Map<String,Object> responseBody = new Map<String,Object>();
-            responseBody = (Map<String,Object>) JSON.deserializeUntyped(response.getBody());
-            if(status ==200) {
-                System.debug('Success ::'+responseBody);
-            } else {
-                System.debug('Error ::'+responseBody);
-            }
-        } catch (Exception e) {
-            System.debug('sendKakao Error Message ::: ' + e.getMessage());
-        }
-    }
-
-
-
-
-13:18:36.0 (397671)|CODE_UNIT_STARTED|[EXTERNAL]|apex://FS_ResrvMngtController/ACTION$sendMessage
-13:18:36.0 (3406074)|HEAP_ALLOCATE|[EXTERNAL]|Bytes:8
-58.0 APEX_CODE,FINEST;APEX_PROFILING,FINEST;CALLOUT,FINEST;DB,FINEST;NBA,FINEST;SYSTEM,FINEST;VALIDATION,FINEST;VISUALFORCE,FINEST;WAVE,FINEST;WORKFLOW,FINEST
-13:18:36.0 (4746004)|CODE_UNIT_FINISHED|apex://FS_ResrvMngtController/ACTION$sendMessage
-13:18:36.0 (4764538)|EXECUTION_FINISHED
-13:18:36.4 (4832267)|CUMULATIVE_PROFILING_BEGIN
-13:18:36.4 (4832267)|CUMULATIVE_PROFILING|No profiling information for SOQL operations
-13:18:36.4 (4832267)|CUMULATIVE_PROFILING|No profiling information for SOSL operations
-13:18:36.4 (4832267)|CUMULATIVE_PROFILING|No profiling information for DML operations
-13:18:36.4 (4832267)|CUMULATIVE_PROFILING|No profiling information for method invocations
-13:18:36.4 (4832267)|CUMULATIVE_PROFILING_END
-
-Process finished.

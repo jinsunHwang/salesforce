@@ -1,18 +1,31 @@
-@AuraEnabled // Send Message
-    public static void sendMessage(Object listTask, String prId, String message,String subject,String phoneNumber){
-        phoneNumber='01049063991';//배포시 주석
-        List<MsgWhitelist__mdt> whitelists = Database.query('SELECT Id,Value__c FROM MsgWhitelist__mdt WHERE Value__c =:phoneNumber ');
-        if(whitelists.isEmpty() && subject =='SMS') {
-            throw new AuraHandledException('고객의 번호를 화이트 리스트에 추가해 주세요.');
-        }
-        try{
-            if(whitelists.size()>0 && subject =='SMS') {
-                FS_MessageCall.sendMessage(phoneNumber,'안녕하세요 고객님. '+message);
+<div class="slds-col slds-size_1-of-12 ">
+    <lightning:select label="부서" value="{! v.mapSearchParam.deptCode }"
+                      variant="label-inline" aura:id="deptSelect"
+                      onchange="{! c.onChangeDept }">
+        <option value="">ALL</option>
+        <aura:iteration items="{! v.mapSettingValue.Comm.listMapDEPT }" var="item">
+            <option value="{!item.value}">{!item.label}</option>
+        </aura:iteration>
+    </lightning:select>
+</div>
+
+
+initCollect : function(component,event,helper) {
+        let action = component.get('c.initCollect');
+        action.setCallback(this,function(response){
+            let state = response.getState();
+            if(state === 'SUCCESS') {
+                let result = response.getReturnValue();
+                let deptList = result.deptList || [];
+                let mapSettingValueOrigin = result.mapSettingValueOrigin || {};
+                mapSettingValueOrigin.Comm.listMapDEPT = highDeptList;
+                component.set('v.mapSettingValueOrigin',mapSettingValueOrigin);
+                let mapSettingValue = this._parse(mapSettingValueOrigin);
+                component.set('v.mapSettingValue',mapSettingValue);
+                component.find('deptSelect').set('v.value',component.get('v.userDeptCode'));
+            } else {
+
             }
-            ProductRequestLineItem productRequestLineItem = Database.query('SELECT ParentId FROM ProductRequestLineItem WHERE Id=:prId');
-            FS_MessageCall.saveMessageLog(productRequestLineItem.ParentId, message,subject);
-        }catch(Exception e) {
-            System.debug(e.getLineNumber() + 'Line || ' + e.getMessage());
-            throw new AuraHandledException(e.getLineNumber() + 'Line || ' + e.getMessage());
-        }
-    }
+        });
+        $A.enqueueAction(action);
+}

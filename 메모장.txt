@@ -9,7 +9,7 @@
     </lightning:select>
 </div>
 
-
+afterRender threw an error in 'c:FS_CollectMngt' [component.find(...).set is not a function]
 initCollect : function(component,event,helper) {
         let action = component.get('c.initCollect');
         action.setCallback(this,function(response){

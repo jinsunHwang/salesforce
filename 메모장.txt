@@ -1,31 +1,15 @@
-<div class="slds-col slds-size_1-of-12 ">
-    <lightning:select label="부서" value="{! v.mapSearchParam.deptCode }"
-                      variant="label-inline" aura:id="deptSelect"
-                      onchange="{! c.onChangeDept }">
-        <option value="">ALL</option>
-        <aura:iteration items="{! v.mapSettingValue.Comm.listMapDEPT }" var="item">
-            <option value="{!item.value}">{!item.label}</option>
-        </aura:iteration>
-    </lightning:select>
-</div>
-
-afterRender threw an error in 'c:FS_CollectMngt' [component.find(...).set is not a function]
-initCollect : function(component,event,helper) {
-        let action = component.get('c.initCollect');
-        action.setCallback(this,function(response){
-            let state = response.getState();
-            if(state === 'SUCCESS') {
-                let result = response.getReturnValue();
-                let deptList = result.deptList || [];
-                let mapSettingValueOrigin = result.mapSettingValueOrigin || {};
-                mapSettingValueOrigin.Comm.listMapDEPT = highDeptList;
-                component.set('v.mapSettingValueOrigin',mapSettingValueOrigin);
-                let mapSettingValue = this._parse(mapSettingValueOrigin);
-                component.set('v.mapSettingValue',mapSettingValue);
-                component.find('deptSelect').set('v.value',component.get('v.userDeptCode'));
-            } else {
-
-            }
-        });
-        $A.enqueueAction(action);
+List<ServiceResource> serviceResources = new List<ServiceResource>();
+for(ProductRequestLineItem productRequestLineItem : productRequestLineItems) {
+    Schema.Location destinationLocation = productRequestLineItem.DestinationLocation != null ?  productRequestLineItem.DestinationLocation : new Schema.Location() ;
+    ServiceResource serviceResource = destinationLocation.ServiceResource__r;
+    if(serviceResource != null) {
+        Decimal unitPrice = (Decimal)productRequestLineItem.UnitPrice__c != null ? (Decimal)productRequestLineItem.UnitPrice__c : 0;
+        serviceResource.Id = destinationLocation.ServiceResource__c;
+        serviceResource.RENT_Amount__c = serviceResource.RENT_Amount__c == null ? 0 : serviceResource.RENT_Amount__c - unitPrice;
+        serviceResources.add(serviceResource);
+    }
 }
+
+upsert serviceResources;
+
+Before Insert or Upsert list must not have two identically equal elements

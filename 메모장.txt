@@ -1,15 +1,25 @@
-List<ServiceResource> serviceResources = new List<ServiceResource>();
-for(ProductRequestLineItem productRequestLineItem : productRequestLineItems) {
-    Schema.Location destinationLocation = productRequestLineItem.DestinationLocation != null ?  productRequestLineItem.DestinationLocation : new Schema.Location() ;
-    ServiceResource serviceResource = destinationLocation.ServiceResource__r;
-    if(serviceResource != null) {
-        Decimal unitPrice = (Decimal)productRequestLineItem.UnitPrice__c != null ? (Decimal)productRequestLineItem.UnitPrice__c : 0;
-        serviceResource.Id = destinationLocation.ServiceResource__c;
-        serviceResource.RENT_Amount__c = serviceResource.RENT_Amount__c == null ? 0 : serviceResource.RENT_Amount__c - unitPrice;
-        serviceResources.add(serviceResource);
+public static List<ServiceResource> cancelServiceResources(List<ProductRequestLineItem> productRequestLineItems) {
+    List<ServiceResource> serviceResources = new List<ServiceResource>();
+    for(ProductRequestLineItem productRequestLineItem : productRequestLineItems) {
+        Schema.Location destinationLocation = productRequestLineItem.DestinationLocation != null ?  productRequestLineItem.DestinationLocation : new Schema.Location() ;
+        ServiceResource serviceResource = destinationLocation.ServiceResource__r;
+        if(serviceResource != null) {
+            Decimal unitPrice = (Decimal)productRequestLineItem.UnitPrice__c != null ? (Decimal)productRequestLineItem.UnitPrice__c : 0;
+            serviceResource.Id = destinationLocation.ServiceResource__c;
+            serviceResource.RENT_Amount__c = serviceResource.RENT_Amount__c == null ? 0 : serviceResource.RENT_Amount__c - unitPrice;
+            serviceResources.add(serviceResource);
+        }
     }
+    return serviceResources;
 }
 
-upsert serviceResources;
+
+public execute(List<ProductRequestLineItem> productRequestLineItems){
+    List<ServiceResource> cancelServiceResources = new List<ServiceResource>();
+    cancelServiceResources = cancelServiceResources(productRequestLineItems);
+    System.debug('cancelServiceResources ::'+cancelServiceResources);
+    upsert cancelServiceResources;
+}
+
 
 Before Insert or Upsert list must not have two identically equal elements

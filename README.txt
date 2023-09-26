@@ -21,12 +21,11 @@ let slOrderProgressArray = records.slOrderProgress;
                         }
                     });
                 } 
-
+this.data2= [...slOrderProgress]
 이코드가 더 좋니?
-
 let slOrderProgressArray = records.slOrderProgress;
-                
-                if(!slOrderProgressArray.length) {
+                let slOrderProgress =[];
+                if(slOrderProgressArray.length) {
                     slOrderProgress =slOrderProgressArray.map(item=>{
                         return {
                             orderNumber : record.orderNumber
@@ -39,14 +38,15 @@ let slOrderProgressArray = records.slOrderProgress;
                         }
                     });
                 } else {
-let slOrderProgress = [{
-                    orderNumber : record.orderNumber
-                    ,orderSeq : record.orderSeq
-                    ,SupplySchDate : ''
-                    ,remark : ''
-                    ,slCreator : ''
-                    ,slCreateDate : ''
-                    ,supplyManager : ''
-                }];
-}
+                    slOrderProgress = [{
+                        orderNumber : record.orderNumber
+                        ,orderSeq : record.orderSeq
+                        ,SupplySchDate : ''
+                        ,remark : ''
+                        ,slCreator : ''
+                        ,slCreateDate : ''
+                        ,supplyManager : ''
+                    }];
+                }
+                this.data2= [...slOrderProgress]
 아니면 이코드가 좋니?

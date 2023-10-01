@@ -1,1 +1,1 @@
-Your 24 hour API limit has been exceeded for one of your Salesforce orgs. You can contact Salesforce to increase the limit. Otherwise, your API limit will be reset the next day.
+No such column 'fm_AdjustYn__c' on entity 'ProductRequestLineItem'. If you are attempting to use a custom field, be sure to append the '__c' after the custom field name. Please reference your WSDL or the describe call for the appropriate names.

@@ -1,5 +1,6 @@
 /**
- * Created by User on 2023-10-16.
+ * Author       : jinsun.hwang
+ * Description  : util....
  */
 
 public with sharing class ComUtils {

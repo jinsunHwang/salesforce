@@ -22,25 +22,6 @@ public with sharing class ComUtils {
         }
         return result;
     }
-    public static Set<String> setToKeysObject (List<Object> objs) {
-        Set<String> setKeys = new Set<String>();
-        for(Object obj : objs) {
-            setKeys.add(String.valueOf(obj));
-        }
-        return setKeys;
-    }
-
-    public static Set<String> setToKeysObject (List<Object> objs,String key) {
-        Set<String> setKeys = new Set<String>();
-        for(Object obj : objs) {
-            if (obj instanceof Map<String,Object>) {
-                Map<String,Object> objectMap = (Map<String,Object>) obj;
-                setKeys.add(String.valueOf(objectMap.get(key)));
-            }
-        }
-        return setKeys;
-    }
-
 
     public static Set<String> setToKeys (List<SObject> sObjs,String key) {
         Set<String> setKeys = new Set<String>();
@@ -58,6 +39,25 @@ public with sharing class ComUtils {
                 joinStr = getSObjStr(sObj,key2);
             }
             setKeys.add(getSObjStr(sObj,key)+joinKey+joinStr);
+        }
+        return setKeys;
+    }
+
+    public static Set<String> setToKeysObject (List<Object> objs) {
+        Set<String> setKeys = new Set<String>();
+        for(Object obj : objs) {
+            setKeys.add(String.valueOf(obj));
+        }
+        return setKeys;
+    }
+
+    public static Set<String> setToKeysObject (List<Object> objs,String key) {
+        Set<String> setKeys = new Set<String>();
+        for(Object obj : objs) {
+            if (obj instanceof Map<String,Object>) {
+                Map<String,Object> objectMap = (Map<String,Object>) obj;
+                setKeys.add(String.valueOf(objectMap.get(key)));
+            }
         }
         return setKeys;
     }
